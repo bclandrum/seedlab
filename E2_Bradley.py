@@ -1,4 +1,4 @@
-# Excercise 2 Demo 1 Seed Lab - Bradley Landrum
+# Exercise 2 Demo 1 Seed Lab - Bradley Landrum
 # String checker finite state machine : checks for abcd in a user inputted string of letters
 def state_0(character): #define state 0
     return state_a if character=='a' else state_0 # checks if the character is a
