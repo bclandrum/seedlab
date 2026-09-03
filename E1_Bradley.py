@@ -1,4 +1,4 @@
-# Excersize 1 Demo 1 Seed Lab
+# Excercise 1 Demo 1 Seed Lab - Bradley Landrum
 import numpy as np #import numpy for computation
 # read in datafile.txt as described in assignment
 with open('datafile.txt','r') as f: 
