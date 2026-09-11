@@ -15,7 +15,7 @@ lcd_rows = 2
 i2c = busio.I2C(board.SCL, board.SDA)  # uses board.SCL and board.SDA
 # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 # Initialise the lcd class
-lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
 # Turn backlight on
 lcd.backlight = True
 
@@ -23,7 +23,7 @@ lcd.backlight = True
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 
 camera = cv2.VideoCapture(0) # Initialize the camera
-sleep(.25) # wait for image to stabilize
+sleep(.5) # wait for image to stabilize
 
 while True:
     ret,frame = camera.read() # Take an image
@@ -37,6 +37,7 @@ while True:
         idText = ", ".join(map(str, ids))
         lcd.clear()
         lcd.message = f"ID: {idText}" 
+        sleep(1)
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
@@ -44,6 +45,7 @@ while True:
     else:
         lcd.clear()
         lcd.message = "No ArUco\nfound."
+        sleep(.5)
 
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
