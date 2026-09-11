@@ -35,9 +35,7 @@ while True:
         overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = 4)
         idText = ", ".join(map(str, ids))
         lcd.clear()
-        lcd.message = f"ID: {idText}"
-        time.sleep(3)
-        lcd.clear()      
+        lcd.message = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
@@ -45,11 +43,12 @@ while True:
     else:
         lcd.clear()
         lcd.message = "No ArUco\nfound."
-        time.sleep(3)
-        lcd.clear()
 
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
+
+camera.release()
+cv2.destroyAllWindows()
 
