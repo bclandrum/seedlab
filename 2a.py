@@ -3,15 +3,16 @@ from cv2 import aruco
 import numpy as np
 import time
 import board
+import busio
 from time import sleep
-import adafruit_character_lcd.character_lcd_i2c as character_lcd
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 #LCD setup from github
 lcd_columns = 16
 lcd_rows = 2
 
 # Initialise I2C bus.
-i2c = board.I2C()  # uses board.SCL and board.SDA
+i2c = busio.I2C(board.SCL, board.SDA)  # uses board.SCL and board.SDA
 # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
 # Initialise the lcd class
 lcd = character_lcd.Character_LCD_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
@@ -22,7 +23,7 @@ lcd.backlight = True
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 
 camera = cv2.VideoCapture(0) # Initialize the camera
-sleep(.5) # wait for image to stabilize
+sleep(.25) # wait for image to stabilize
 
 while True:
     ret,frame = camera.read() # Take an image
@@ -51,4 +52,4 @@ while True:
 
 camera.release()
 cv2.destroyAllWindows()
-
+lcd.backlight = False
