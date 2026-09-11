@@ -55,3 +55,5 @@ while True:
 camera.release()
 cv2.destroyAllWindows()
 lcd.backlight = False
+lcd.clear()
+
