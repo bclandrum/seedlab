@@ -3,7 +3,7 @@ import time
 import board
 import busio
 from smbus2 import SMBus
-import adafruit_character_led.character_lcd_rgb_i2c as character_lcd
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 # LCD Display Setup (via github)
 lcd_columns = 16
 lcd_rows = 2
