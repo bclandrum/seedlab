@@ -7,7 +7,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 # LCD Display Setup (via github)
 lcd_columns = 16
 lcd_rows = 2
-i2c = busio.I2C(board,SCL, board.SDA)
+i2c = busio.I2C(board.SCL, board.SDA)
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
 lcd.backlight = True
 
