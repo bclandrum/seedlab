@@ -1,0 +1,28 @@
+#include <Wire.h>
+#define MY_ADDR 8
+// incoming byte 
+volatile byte incomingByte = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  Wire.begin(MY_ADDR);
+  Wire.onReceive(receive);
+  Wire.onRequest(request);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  }
+void receive(int byteCount) {
+  while (Wire.available()) {
+    incomingByte = Wire.read();
+  }
+  Serial.print("Received: ");
+  Serial.println(incomingByte);
+}
+void request() {
+  byte responseByte = incomingByte + 100;
+  Wire.write(responseByte);
+}
+}
