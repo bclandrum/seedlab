@@ -37,3 +37,5 @@ def main():
         lcd.message = f"You entered:\n {value}"
         lcd.sleep(1)
         lcd.backlight = False
+if __name__ = "__main__":
+    main()
