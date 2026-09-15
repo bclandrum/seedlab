@@ -31,11 +31,11 @@ def main():
         bus.write_byte(ARDUINO_ADDR,value) # starts receiving on Arduino
         time.sleep(0.1)
 
-        response=bus.read_byte(ARDUINO_ADDR,value) # starts reading on Arduino
+        response=bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
         print(f"Arduino returned: {response}, (expected {value+100})")
         lcd.clear()
         lcd.message = f"You entered:\n {value}"
-        lcd.sleep(1)
+        time.sleep(1)
         lcd.backlight = False
 if __name__ == "__main__":
     main()
