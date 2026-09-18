@@ -1,4 +1,4 @@
-# raspberry pi code for 1a.
+# raspberry pi code for 1b.
 import time
 import board
 import busio
@@ -7,7 +7,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 # LCD Display Setup (via github)
 lcd_columns = 16
 lcd_rows = 2
-i2c = busio.I2C(board,SCL, board.SDA)
+i2c = busio.I2C(board.SCL, board.SDA)
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
 lcd.backlight = True
 
@@ -31,9 +31,11 @@ def main():
         bus.write_byte(ARDUINO_ADDR,value) # starts receiving on Arduino
         time.sleep(0.1)
 
-        response=bus.read_byte(ARDUINO_ADDR,value) # starts reading on Arduino
+        response=bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
         print(f"Arduino returned: {response}, (expected {value+100})")
         lcd.clear()
-        lcd.message = f"You entered:\n {value}"
-        lcd.sleep(1)
+        lcd.message = f"You entered:\n {response}"
+        time.sleep(0.5)
         lcd.backlight = False
+if __name__ == "__main__":
+    main()
