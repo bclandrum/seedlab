@@ -37,7 +37,7 @@ while True:
         idText = ", ".join(map(str, ids))
         lcd.clear()
         lcd.message = f"ID: {idText}" 
-        sleep(1)
+        sleep(0.5)
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
