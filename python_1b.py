@@ -1,4 +1,4 @@
-# raspberry pi code for 1a.
+# raspberry pi code for 1b.
 import time
 import board
 import busio
@@ -34,8 +34,8 @@ def main():
         response=bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
         print(f"Arduino returned: {response}, (expected {value+100})")
         lcd.clear()
-        lcd.message = f"You entered:\n {value}"
-        time.sleep(1)
+        lcd.message = f"You entered:\n {response}"
+        time.sleep(0.5)
         lcd.backlight = False
 if __name__ == "__main__":
     main()
