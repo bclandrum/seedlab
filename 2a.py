@@ -23,7 +23,7 @@ lcd.backlight = True
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 
 camera = cv2.VideoCapture(0) # Initialize the camera
-sleep(.5) # wait for image to stabilize
+sleep(.25) # wait for image to stabilize
 
 while True:
     ret,frame = camera.read() # Take an image
@@ -37,7 +37,7 @@ while True:
         idText = ", ".join(map(str, ids))
         lcd.clear()
         lcd.message = f"ID: {idText}" 
-        sleep(0.5)
+        sleep(0.25)
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
@@ -45,7 +45,7 @@ while True:
     else:
         lcd.clear()
         lcd.message = "No ArUco\nfound."
-        sleep(.5)
+        sleep(.25)
 
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
