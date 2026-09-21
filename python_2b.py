@@ -18,16 +18,19 @@ lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows, address=0x
 lcd.backlight = True # Turn backlight on
 lcd.message = "Capturing..."
 
-camera = cv2.VideoCapture(0) # Initialize the camera
-sleep(2) # wait for image to stabilize
-# Get an image from the camera stream, error and quit if not
-ret, image = camera.read()
-if not ret:
-	print("Could not capture image from camera!")
-	lcd.message = "Cap. Error!"
-	quit()
-cv2.imwrite("captured.jpg",image)
-
+while True:
+	camera = cv2.VideoCapture(0) # Initialize the camera
+	sleep(2) # wait for image to stabilize
+	# Get an image from the camera stream, error and quit if not
+	ret, image = camera.read()
+	if not ret:
+		print("Could not capture image from camera!")
+		lcd.message = "Cap. Error!"
+		quit()
+		cv2.imwrite("captured.jpg",image)
+	k = cv2.waitKey(1) & 0xFF
+	if k == ord('q'):
+		break
 # threshold for green in hsv
 hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
 lowGreen  = np.array([35, 40, 40])
