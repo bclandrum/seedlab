@@ -1,4 +1,5 @@
 # raspberry pi code for 2b.
+
 import numpy as np
 import time
 from time import sleep
@@ -29,8 +30,8 @@ cv2.imwrite("captured.jpg",image)
 
 # threshold for green in hsv
 hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-lowGreen  = [64, 200, 120]
-highGreen = [84, 255, 255]
+lowGreen  = np.array([64, 200, 120])
+highGreen = np.array([84, 255, 255])
 # masking out only green
 mask=cv2.inRange(hsv,lowGreen,highGreen)
 # clean up mask with morphological transformations
@@ -58,7 +59,7 @@ if largeContour is not None and area > min_area:
 	center = (x+w//2,y+h//2)
 	cv2.puText(contour_result,"Green shape",(x,y-10),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
 	cv2.circle(contour_result,center,4,(0,0,255),-1)
-	print("Found the green shape... area=%.0f , center=%s."(area,center))
+	print("Found the green shape... area=%.0f , center=%s."%(area,center))
 	lcd.message = "Green Found!"
 else:
 	print("Green shape was NOT found.")
