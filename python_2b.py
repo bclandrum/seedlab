@@ -19,7 +19,7 @@ lcd.backlight = True # Turn backlight on
 lcd.message = "Capturing..."
 
 camera = cv2.VideoCapture(0) # Initialize the camera
-sleep(1) # wait for image to stabilize
+sleep(2) # wait for image to stabilize
 # Get an image from the camera stream, error and quit if not
 ret, image = camera.read()
 if not ret:
