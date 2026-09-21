@@ -60,7 +60,7 @@ if largeContour is not None and area > min_area:
 	cv2.drawContours(contour_result,[largeContour],-1,(0,255,0),3)
 	x,y,w,h=cv2.boundingRect(largeContour)
 	center = (x+w//2,y+h//2)
-	cv2.puText(contour_result,"Green shape",(x,y-10),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
+	cv2.putText(contour_result,"Green shape",(x,y-10),cv2.FONT_HERSHEY_SIMPLEX,0.7,(0,0,255),2)
 	cv2.circle(contour_result,center,4,(0,0,255),-1)
 	print("Found the green shape... area=%.0f , center=%s."%(area,center))
 	lcd.message = "Green Found!"
