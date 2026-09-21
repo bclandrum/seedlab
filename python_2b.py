@@ -30,8 +30,8 @@ cv2.imwrite("captured.jpg",image)
 
 # threshold for green in hsv
 hsv = cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
-lowGreen  = np.array([50, 180, 100])
-highGreen = np.array([100, 255, 255])
+lowGreen  = np.array([35, 40, 40])
+highGreen = np.array([90, 255, 255])
 # masking out only green
 mask=cv2.inRange(hsv,lowGreen,highGreen)
 # clean up mask with morphological transformations
