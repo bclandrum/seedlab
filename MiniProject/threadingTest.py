@@ -30,16 +30,23 @@ def myFunction():
     lcd.backlight = True
 
     while True:
-        if not q.empty():
-            if last_lcdText != lcdText:
-                lcd.clear()
-            lcd.message = lcdText
+        # Wait for a new message
+        lcdText = q.get()
+
+        # Clear the old message
+        lcd.clear()
+
+        # Write the new data to the LCD
+        lcd.message = lcdText
+        # ******************************
+        # Write new data to the LCD here
+        # ******************************
             
 camera = cv2.VideoCapture(0) # Initialize the camera
 sleep(.5) # wait for image to stabilize
-last_lcdText = ""
-lcdText = ""
-reset = False
+
+last_lcd_text = ""
+
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 myThread = threading.Thread(target=myFunction,args=())
 myThread.start()   
@@ -47,26 +54,29 @@ while True:
     # Do some things...
     putSomething = random()
     # Send it to the thread
-    if True: # Put your own conditional here (i.e. ArUco marker moved)
-        q.put(putSomething)
+    # Only send a new message when the LCD text changes
+
     # Carry on...
     ret,frame = camera.read() # Take an image
     grey = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) # Make the image greyscale for ArUco detection
     corners,ids,rejected = aruco.detectMarkers(grey,aruco_dict)
-    overlay = frame.copy() # Convert back to RGB for imshow, as well as for the next step
+    overlay = frame.copy() # Keep the original color image for imshow
     if not ids is None:
         ids = ids.flatten()
         overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = 4)
         idText = ", ".join(map(str, ids)) 
-        last_lcdText = lcdText
         lcdText = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
             overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
     else:
-        last_lcdText = lcdText
         lcdText = "No ArUco\nfound."
+
+    # Send the new LCD message to the thread only if it changed
+    if lcdText != last_lcd_text:
+        q.put(lcdText)
+        last_lcd_text = lcdText
 
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
@@ -75,3 +85,4 @@ while True:
 
 camera.release()
 cv2.destroyAllWindows()
+
