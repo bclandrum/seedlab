@@ -31,16 +31,16 @@ def myFunction():
 
     while True:
         if not q.empty():
-            gotSomething = q.get()
-            print("I got: {}".format(gotSomething))
+            lcd.message = lcdText
             # ******************************
             # Write new data to the LCD here
             # ******************************
             
 camera = cv2.VideoCapture(0) # Initialize the camera
 sleep(.5) # wait for image to stabilize
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 myThread = threading.Thread(target=myFunction,args=())
-myThread.start()
+myThread.start()   
 while True:
     # Do some things...
     putSomething = random()
@@ -51,12 +51,14 @@ while True:
     ret,frame = camera.read() # Take an image
     grey = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY) # Make the image greyscale for ArUco detection
     corners,ids,rejected = aruco.detectMarkers(grey,aruco_dict)
-    overlay = cv2.cvtColor(grey,cv2.COLOR_GRAY2RGB) # Convert back to RGB for imshow, as well as for the next step
+    overlay = frame.copy() # Convert back to RGB for imshow, as well as for the next step
     if not ids is None:
         ids = ids.flatten()
         overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = 4)
-        idText = ", ".join(map(str, ids))
-        lcdText = f"ID: {idText}" 
+        idText = ", ".join(map(str, ids)) 
+        if lcdText != f"ID: {idText}":
+            lcd.clear()
+            lcdText = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
@@ -68,4 +70,3 @@ while True:
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
-
