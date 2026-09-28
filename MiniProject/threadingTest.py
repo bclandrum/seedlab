@@ -77,7 +77,7 @@ while True:
             center_x = np.mean(pts[:, 0])
             center_y = np.mean(pts[:, 1])
             print(f"Center pixel: ({center_x}, {center_y})")
-            coord_text = f'X:{tvec[0]:.2f} Y:{tvec[1]:.2f} Z:{tvec[2]:.2f}m'
+            coord_text = f'X: {center_x}, Y: {center_y}'
 
             # Overlay coordinates of center onto the image
             cv2.putText(overlay, coord_text, (center_x - 50, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
