@@ -31,6 +31,8 @@ def myFunction():
 
     while True:
         if not q.empty():
+            if reset == True:
+                lcd.clear()
             lcd.message = lcdText
             # ******************************
             # Write new data to the LCD here
@@ -38,6 +40,8 @@ def myFunction():
             
 camera = cv2.VideoCapture(0) # Initialize the camera
 sleep(.5) # wait for image to stabilize
+lcdText = ""
+reset = False
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 myThread = threading.Thread(target=myFunction,args=())
 myThread.start()   
@@ -56,9 +60,11 @@ while True:
         ids = ids.flatten()
         overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = 4)
         idText = ", ".join(map(str, ids)) 
-        if lcdText != f"ID: {idText}":
-            lcd.clear()
-            lcdText = f"ID: {idText}" 
+        if lcdText == f"ID: {idText}":
+            reset = False
+        else:
+            reset = True
+        lcdText = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
@@ -70,3 +76,6 @@ while True:
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
+
+camera.release()
+cv2.destroyAllWindows()
