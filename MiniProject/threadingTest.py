@@ -63,24 +63,28 @@ while True:
     overlay = frame.copy() # Keep the original color image for imshow
     if not ids is None:
         ids = ids.flatten()
-        overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = 4)
+        overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = (0, 255, 0))
         idText = ", ".join(map(str, ids)) 
         lcdText = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2)) 
             overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
+
         for i, corner in enumerate(corners):
             # 4 corners of the marker in (x, y) pixel coordinates
             pts = corner[0]
+
             #calculate center (x, y)
             center_x = np.mean(pts[:, 0])
             center_y = np.mean(pts[:, 1])
+
             print(f"Center pixel: ({center_x}, {center_y})")
+
             coord_text = f'X: {center_x}, Y: {center_y}'
 
             # Overlay coordinates of center onto the image
-            cv2.putText(overlay, coord_text, (center_x - 50, center_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
+            cv2.putText(overlay, coord_text, (int(center_x - 50), int(center_y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
     else:
         lcdText = "No ArUco\nfound."
 
