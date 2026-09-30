@@ -10,29 +10,35 @@ from cv2 import aruco
 import numpy as np
 import board
 import busio
+from smbus2 import SMBus
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 
 q = queue.Queue()
-
+ARDUINO_ADDR = 8
+bus = SMBus(1)
 def goal_loc(cx,cy,frame_width=640,frame_height=480):
     x_axis= frame_height//2 # horizontal threshold (divides vertical in half across the middle)
     y_axis= frame_width//2 # vertical threshold (divides horizontal in half across the middle)
 
     if cx >= y_axis and cy <= x_axis: #north east quadrant
         left,right = 0,0
+        value = 1
         lcdNew = f"Goal Position:\n{left},{right}"
     elif cx <= y_axis and cy <= x_axis: #north west quadrant
         left,right = 0,1
+        value = 2
         lcdNew = f"Goal Position:\n{left},{right}"
     elif cx <= y_axis and cy >= x_axis: #south west quadrant
         left,right = 1,1
+        value = 3
         lcdNew = f"Goal Position:\n{left},{right}"
     elif cx >= y_axis and cy >= x_axis: #south east quadrant
         left,right = 1,0
+        value = 4
         lcdNew = f"Goal Position:\n{left},{right}"
 
-    return left,right,lcdNew
+    return left, right, lcdNew, value
 
 def myFunction():
     # ************************
@@ -99,7 +105,7 @@ while True:
             center_x = np.mean(pts[:, 0])
             center_y = np.mean(pts[:, 1])
 
-            x_goal,y_goal,lcdText = goal_loc(center_x, center_y)
+            x_goal,y_goal,lcdText,value = goal_loc(center_x, center_y)
 
             coord_text = f'X: {center_x}, Y: {center_y}'
             cv2.line(overlay, (320,0), (320,480), (0, 0, 255), 2)
@@ -113,7 +119,9 @@ while True:
     if lcdText != last_lcd_text:
         q.put(lcdText)
         last_lcd_text = lcdText
-
+    bus.write_byte(ARDUINO_ADDR, value) # starts receiving on Arduino
+    response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
+    print(f"Coordinates Received: {response}")
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
