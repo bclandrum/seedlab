@@ -21,12 +21,16 @@ def goal_loc(cx,cy,frame_width=640,frame_height=480):
 
     if cx >= y_axis and cy <= x_axis: #north east quadrant
         left,right = 0,0
+        lcd.Text = f"Goal Position:\n{left},{right}"
     elif cx <= y_axis and cy <= x_axis: #north west quadrant
         left,right = 0,1
+        lcd.Text = f"Goal Position:\n{left},{right}"
     elif cx <= y_axis and cy >= x_axis: #south west quadrant
         left,right = 1,1
+        lcd.Text = f"Goal Position:\n{left},{right}"
     elif cx >= y_axis and cy >= x_axis: #south east quadrant
         left,right,1,0
+        lcd.Text = f"Goal Position:\n{left},{right}"
 
     value = (left << 1)|(right) # goal location formatting
     return left,right,value
@@ -41,7 +45,6 @@ def main():
         response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
         print(f"Coordinates Received: {response}")
         lcd.clear()
-        lcd.message = f"Goal Position:\n{left} {right}"
         time.sleep(1)       
 if __name__ == "__main__":
     main()
