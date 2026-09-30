@@ -102,9 +102,10 @@ while True:
             x_goal,y_goal,lcdText = goal_loc(center_x, center_y)
 
             coord_text = f'X: {center_x}, Y: {center_y}'
-
+            cv2.line(overlay, (320,0), (320,480), (0, 0, 255), 2)
+            cv2.line(overlay, (0,240), (640,240), (0, 0, 255), 2)   
             # Overlay coordinates of center onto the image
-            cv2.putText(overlay, coord_text, (int(center_x - 50), int(center_y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
+            # cv2.putText(overlay, coord_text, (int(center_x - 50), int(center_y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
     else:
         lcdText = "No ArUco\nfound."
 
