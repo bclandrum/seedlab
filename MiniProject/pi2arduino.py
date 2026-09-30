@@ -1,4 +1,4 @@
-# raspberry pi code for 1b.
+# Mini assignment pi 2 arduino and quadrant handling - Bradley Landrum
 import time
 import board
 import busio
