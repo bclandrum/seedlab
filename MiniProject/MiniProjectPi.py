@@ -17,6 +17,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 q = queue.Queue()
 ARDUINO_ADDR = 8
 bus = SMBus(1)
+value = 0
 def goal_loc(cx,cy,frame_width=640,frame_height=480):
     x_axis= frame_height//2 # horizontal threshold (divides vertical in half across the middle)
     y_axis= frame_width//2 # vertical threshold (divides horizontal in half across the middle)
@@ -121,7 +122,6 @@ while True:
         last_lcd_text = lcdText
     bus.write_byte(ARDUINO_ADDR, value) # starts receiving on Arduino
     response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
-    print(f"Coordinates Received: {response}")
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
