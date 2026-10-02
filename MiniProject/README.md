@@ -14,7 +14,7 @@ Holds the main code for the pi that finds the quadrants of ArUco markers and dis
 
 Motor_Encoder_Counts.ino:
  
-<Insert>
+Estimates robots position and orientation from hand-turning the wheels
 
 threadingTest.py:
  
