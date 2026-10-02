@@ -1,5 +1,6 @@
 # Josiah Husmann, Bradley Landrum - SEED Lab
-# Threading example
+# Mini Project Pi Code
+# This program identifies aruco markers and updates the LCD using threading with the goal coordinates and sends the quadrant to the arduino
 
 import queue
 import threading
