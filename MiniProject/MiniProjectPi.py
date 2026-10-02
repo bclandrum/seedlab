@@ -1,4 +1,4 @@
-# Josiah Husmann - SEED Lab
+# Josiah Husmann, Bradley Landrum - SEED Lab
 # Threading example
 
 import queue
@@ -15,6 +15,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 
 q = queue.Queue()
+#Arduino init
 ARDUINO_ADDR = 8
 bus = SMBus(1)
 value = 0
@@ -102,10 +103,11 @@ while True:
             # 4 corners of the marker in (x, y) pixel coordinates
             pts = corner[0]
 
-            #calculate center (x, y)
+            # calculate center (x, y)
             center_x = np.mean(pts[:, 0])
             center_y = np.mean(pts[:, 1])
 
+            # gets the goal coordinate values
             x_goal,y_goal,lcdText,value = goal_loc(center_x, center_y)
 
             coord_text = f'X: {center_x}, Y: {center_y}'
@@ -123,6 +125,7 @@ while True:
     bus.write_byte(ARDUINO_ADDR, value) # starts receiving on Arduino
     response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
     cv2.imshow("overlay",overlay)
+    #if user enters q then quit
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
