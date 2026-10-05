@@ -1,4 +1,5 @@
 # Assignment 1, Excercise 2
+# String checker finite state machine : checks for abcd in a user inputted string of letters
 # Josiah Husmann
 
 
