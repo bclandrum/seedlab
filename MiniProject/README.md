@@ -1,22 +1,29 @@
-## Mini Project - SEED LAB
+# Mini Project – SEED LAB
 
-Colorado School of Mines
- 
-Members:
- 
-Josiah Husmann, Bradley Landrum, Cailey Cashion, Stefan Marshall
+**Colorado School of Mines**
 
-##Programs in mini project:
- 
-MiniProjectPi.py:
- 
-Holds the main code for the pi that finds the quadrants of ArUco markers and displays the desired coordinates on the LCD and transmits it to the arduino
+### Team Members
 
-Motor_Encoder_Counts.ino:
- 
-Estimates robots position and orientation from hand-turning the wheels
+* Josiah Husmann
+* Bradley Landrum
+* Cailey Cashion
+* Stefan Marshall
 
-threadingTest.py:
- 
-Program holds an example of testing LCD threading
+## Programs
 
+### `MiniProjectPi.py`
+
+Main Raspberry Pi program for the mini project. This program:
+
+* Detects ArUco markers using the camera.
+* Determines the quadrant/location of each ArUco marker.
+* Displays the desired coordinates on the LCD.
+* Transmits the desired coordinates to the Arduino.
+
+### `Motor_Encoder_Counts.ino`
+
+Arduino program used to estimate the robot's position and orientation based on encoder counts from manually turning the robot's wheels.
+
+### `threadingTest.py`
+
+Example program used to test LCD threading and demonstrate communication between threads and the LCD display.
