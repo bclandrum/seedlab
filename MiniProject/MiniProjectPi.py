@@ -123,8 +123,8 @@ while True:
     if lcdText != last_lcd_text:
         q.put(lcdText)
         last_lcd_text = lcdText
-    bus.write_byte(ARDUINO_ADDR, value) # starts receiving on Arduino
-    response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
+        bus.write_byte(ARDUINO_ADDR, value) # starts receiving on Arduino
+        response = bus.read_byte(ARDUINO_ADDR) # starts reading on Arduino
     cv2.imshow("overlay",overlay)
     #if user enters q then quit
     k = cv2.waitKey(1) & 0xFF
