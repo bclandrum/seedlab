@@ -1,4 +1,5 @@
 # Exercise 1 Demo 1 Seed Lab - Bradley Landrum
+# familiarizing with numpy for computations, using arrays, sorting, finding extrema, counting values, etc.
 import numpy as np #import numpy for computation
 # read in datafile.txt as described in assignment
 with open('datafile.txt','r') as f: 
