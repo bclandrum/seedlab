@@ -1,3 +1,6 @@
+# Josiah Husmann - SEED Lab
+# Gets a string input from the raspberry Pi and sends it to the arduino 
+
 from smbus2 import SMBus
 from time import sleep
 
