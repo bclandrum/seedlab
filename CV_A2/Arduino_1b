@@ -1,3 +1,6 @@
+// Arduino Code for Assignment 2 - 1B - Bradley Landrum
+// Handles interconnectivity between raspberry pi and arduino. receives byte from raspberry pi, adds one hundred
+// to the imported value, and then sends back a response byte to be displayed by lcd on the pi.
 #include <Wire.h>
 #define MY_ADDR 8
 // incoming byte 
