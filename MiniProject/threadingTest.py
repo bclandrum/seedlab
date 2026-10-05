@@ -1,5 +1,5 @@
 # Josiah Husmann - SEED Lab
-# Threading example
+# Threading example to test the threading with the LCD. Takes images continuously and reads for ArUco markers and finds the middle coordinate
 
 import queue
 import threading
