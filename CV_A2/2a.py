@@ -1,3 +1,6 @@
+# Josiah Husmann - SEED Lab
+# Takes continuous images with the camera on the Raspberry Pi and locates ArUco markers in grayscale and converts back to BGR for image display. The program displays the ArUco ID to the LCD
+
 import cv2
 from cv2 import aruco
 import numpy as np
