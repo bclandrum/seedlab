@@ -1,4 +1,4 @@
-
+# Exercise 1 Assignment 1 Seed Lab - Josiah Husmann
 # familiarizing with numpy for computations, using arrays, sorting, finding extrema, counting values, etc.
 import numpy as np
 
