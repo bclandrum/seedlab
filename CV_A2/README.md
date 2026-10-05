@@ -1,4 +1,4 @@
-# Mini Project – SEED LAB
+# Computer Vision Assignment 2 – SEED LAB
 
 **Colorado School of Mines**
 
