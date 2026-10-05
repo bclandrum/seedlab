@@ -2,7 +2,7 @@
 # Colorado School of Mines - SEED Lab
 
 ## Members:
-Josiah Husmann, Bradley Landrum
+Josiah Husmann, Bradley Landrum, Cailey Cashion, Stefan Marshall
 
 ## Folder Overview:
 This folder contains our code and relevant files for the computer vision portion of assignment 1 in SEED lab.
