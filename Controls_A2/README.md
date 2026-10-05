@@ -3,10 +3,10 @@
 **Colorado School of Mines**
 
 ### Team Members
-Josiah Husmann
-Bradley Landrum
-Cailey Cashion
-Stefan Marshall
+* Josiah Husmann
+* Bradley Landrum
+* Cailey Cashion
+* Stefan Marshall
 
 ## Programs
 
