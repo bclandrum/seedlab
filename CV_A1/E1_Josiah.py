@@ -1,3 +1,5 @@
+
+# familiarizing with numpy for computations, using arrays, sorting, finding extrema, counting values, etc.
 import numpy as np
 
 with open('datafile.txt','r') as f: #reads the file into a list
