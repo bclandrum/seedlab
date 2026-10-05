@@ -20,5 +20,5 @@ the user, and checking to see if the characters 'abcd' appear in that order in t
 characters if it is not present. 
 
 ## Hardware + Relevant Libraries
-Raspberry Pi 4 Model B
+Raspberry Pi 4 Model B,
 python3, (to run, write, and build code), numpy (for arrays and computations).
