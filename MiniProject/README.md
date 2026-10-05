@@ -20,9 +20,12 @@ Main Raspberry Pi program for the mini project. This program:
 * Displays the desired coordinates on the LCD.
 * Transmits the desired coordinates to the Arduino.
 
-### `Motor_Encoder_Counts.ino`
+### `MiniProjectArduino.ino`
 
-Arduino program used to estimate the robot's position and orientation based on encoder counts from manually turning the robot's wheels.
+Main Arduino program for the mini project. This program:
+
+* Receives desired coordinates from the Pi
+* 
 
 ### `threadingTest.py`
 
