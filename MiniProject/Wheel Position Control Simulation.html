@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      -->
+<title>Mini Project: Wheel Position Control Simulation</title>
+<meta name="generator" content="MATLAB 25.1" />
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+<meta name="DC.date" content="2026-10-05" />
+<meta name="DC.source" content="MiniProject_Sim.m" />
+<style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style>
+</head>
+<body data-mwthemeclass-status="false" class="mw-theme-light" style="zoom: 100%;">
+<div class="content">
+<h1>Mini Project: Wheel Position Control Simulation</h1>
+<!--introduction-->
+<p>Cailey Cashion EENG 350 - SEED Lab</p>
+<p>This script runs a Simulink model of the wheel position controller and plots the desired position, simulated position, and motor voltage command.</p>
+<p>The position PI controller uses position error to calculate a desired wheel speed. The inner proportional velocity controller uses speed error to calculate the motor voltage command.</p>
+<p>Required file: Simulink_miniProject.slx The model must be in the current folder or on the MATLAB path.</p>
+<p>These results are simulated responses, not experimental measurements.</p>
+<!--/introduction-->
+<h2>Contents</h2>
+<div>
+<ul>
+<li>
+<a href="#1">Motor Model Parameters</a>
+</li>
+<li>
+<a href="#2">Controller Settings</a>
+</li>
+<li>
+<a href="#3">Run the Simulink Model</a>
+</li>
+<li>
+<a href="#4">Plot the Position Response and Motor Voltage</a>
+</li>
+<li>
+<a href="#5">Interpretation of Results</a>
+</li>
+</ul>
+</div>
+<h2 id="1">Motor Model Parameters</h2>
+<p>The motor model relates applied voltage to angular velocity:</p>
+<p>G(s) = K*sigma / (s + sigma)</p>
+<pre class="codeinput">K = 2.2;
+sigma = 5;
+</pre>
+<h2 id="2">Controller Settings</h2>
+<p>Kp is the proportional gain of the inner velocity controller. It determines how strongly the voltage command responds to the difference between desired and simulated wheel speed.</p>
+<p>Kp is a controller gain; it is different from the motor-model gain K.</p>
+<p>The outer position PI gains are configured in the Simulink controller block and are not assigned by this script.</p>
+<pre class="codeinput">Kp = 2.0;
+</pre>
+<h2 id="3">Run the Simulink Model</h2>
+<p>Run the model using the parameters defined above. Simulation duration and the position step are configured in the model.</p>
+<p>The model returns these logged signals as timeseries: out.DesiredPosition - commanded wheel angle in radians out.Position - simulated wheel angle in radians out.Voltage - simulated motor voltage command in volts</p>
+<pre class="codeinput">out = sim(<span class="string">'Simulink_miniProject'</span>);
+</pre>
+<pre class="codeoutput">Warning: The file containing block diagram 'Simulink_miniProject' is shadowed by
+a file of the same name higher on the MATLAB path. This can cause unexpected
+behavior. For more information see &lt;a href="matlab:helpview([docroot '/toolbox/simulink/helptargets.map'], 'shadowing')"&gt;"Avoiding Problems with Shadowed Files"&lt;/a&gt; in
+the Simulink documentation.
+
+The file containing the block diagram is:
+C:\Users\cashi\Downloads\Simulink_miniProject.slx.
+The file higher on the MATLAB path is: C:\Users\cashi\Downloads\Simulink Mini
+Project\Simulink_miniProject.slx 
+</pre>
+<h2 id="4">Plot the Position Response and Motor Voltage</h2>
+<p>The upper plot compares the desired and simulated wheel positions. It shows how quickly the wheel approaches its target and whether the response overshoots, oscillates, or retains a position error.</p>
+<p>The lower plot shows the voltage command used to produce that motion.</p>
+<pre class="codeinput">figure(<span class="string">'Name'</span>, <span class="string">'Mini Project: Position Control'</span>, <span class="string">'Color'</span>, <span class="string">'w'</span>);
+
+<span class="comment">% Position response.</span>
+subplot(2,1,1);
+
+plot(out.DesiredPosition.Time, out.DesiredPosition.Data, <span class="keyword">...</span>
+    <span class="string">'--'</span>, <span class="string">'LineWidth'</span>, 1.5);
+hold <span class="string">on</span>;
+
+plot(out.Position.Time, out.Position.Data, <span class="keyword">...</span>
+    <span class="string">'LineWidth'</span>, 1.5);
+
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Wheel position (rad)'</span>);
+title(<span class="string">'Desired and Simulated Wheel Position'</span>);
+legend(<span class="string">'Desired'</span>, <span class="string">'Simulated'</span>, <span class="string">'Location'</span>, <span class="string">'best'</span>);
+
+<span class="comment">% Motor voltage command.</span>
+subplot(2,1,2);
+
+plot(out.Voltage.Time, out.Voltage.Data, <span class="keyword">...</span>
+    <span class="string">'LineWidth'</span>, 1.5);
+
+grid <span class="string">on</span>;
+xlabel(<span class="string">'Time (s)'</span>);
+ylabel(<span class="string">'Motor voltage command (V)'</span>);
+title(<span class="string">'Simulated Motor Voltage Command'</span>);
+legend(<span class="string">'Voltage command'</span>, <span class="string">'Location'</span>, <span class="string">'best'</span>);
+</pre>
+<img vspace="5" hspace="5" src="MiniProject_Sim_01.png" alt="" /> <h2 id="5">Interpretation of Results</h2>
+<p>For the simulation shown during testing, the desired position changed from zero to approximately pi radians at t = 1 second. This shows a half rotation of the wheel.</p>
+<p>The simulated position approached the target smoothly, with no overshoot or oscillation in the plotted response.</p>
+<p>The voltage command initially rose to around 6 V and then decreased toward zero as the wheel approached the target.</p>
+<p>This response supports stable position tracking for the simulated test.</p>
+<p class="footer">
+<br />
+<a href="https://www.mathworks.com/products/matlab/">Published with MATLAB® R2025a</a>
+<br />
+</p>
+</div>
+<!--
+##### SOURCE BEGIN #####
+%% Mini Project: Wheel Position Control Simulation
+% Cailey Cashion
+% EENG 350 - SEED Lab
+%
+% This script runs a Simulink model of the wheel position controller
+% and plots the desired position, simulated position, and motor
+% voltage command.
+%
+% The position PI controller uses position error to calculate a
+% desired wheel speed. The inner proportional velocity controller
+% uses speed error to calculate the motor voltage command.
+%
+% Required file: Simulink_miniProject.slx
+% The model must be in the current folder or on the MATLAB path.
+%
+% These results are simulated responses, not experimental measurements.
+
+%% Motor Model Parameters
+% The motor model relates applied voltage to angular velocity:
+%
+% G(s) = K*sigma / (s + sigma)
+
+K = 2.2;
+sigma = 5;
+
+%% Controller Settings
+% Kp is the proportional gain of the inner velocity controller.
+% It determines how strongly the voltage command responds to the
+% difference between desired and simulated wheel speed.
+%
+% Kp is a controller gain; it is different from the motor-model gain K.
+%
+% The outer position PI gains are configured in the Simulink
+% controller block and are not assigned by this script.
+
+Kp = 2.0;
+
+%% Run the Simulink Model
+% Run the model using the parameters defined above.
+% Simulation duration and the position step are configured in the model.
+%
+% The model returns these logged signals as timeseries:
+%   out.DesiredPosition - commanded wheel angle in radians
+%   out.Position        - simulated wheel angle in radians
+%   out.Voltage         - simulated motor voltage command in volts
+
+out = sim('Simulink_miniProject');
+
+%% Plot the Position Response and Motor Voltage
+% The upper plot compares the desired and simulated wheel positions.
+% It shows how quickly the wheel approaches its target and whether
+% the response overshoots, oscillates, or retains a position error.
+%
+% The lower plot shows the voltage command used to produce that motion.
+
+figure('Name', 'Mini Project: Position Control', 'Color', 'w');
+
+% Position response.
+subplot(2,1,1);
+
+plot(out.DesiredPosition.Time, out.DesiredPosition.Data, ...
+    'REPLACE_WITH_DASH_DASH', 'LineWidth', 1.5);
+hold on;
+
+plot(out.Position.Time, out.Position.Data, ...
+    'LineWidth', 1.5);
+
+grid on;
+xlabel('Time (s)');
+ylabel('Wheel position (rad)');
+title('Desired and Simulated Wheel Position');
+legend('Desired', 'Simulated', 'Location', 'best');
+
+% Motor voltage command.
+subplot(2,1,2);
+
+plot(out.Voltage.Time, out.Voltage.Data, ...
+    'LineWidth', 1.5);
+
+grid on;
+xlabel('Time (s)');
+ylabel('Motor voltage command (V)');
+title('Simulated Motor Voltage Command');
+legend('Voltage command', 'Location', 'best');
+
+%% Interpretation of Results
+% For the simulation shown during testing, the desired position
+% changed from zero to approximately pi radians at t = 1 second.
+% This shows a half rotation of the wheel.
+%
+% The simulated position approached the target smoothly, with no
+% overshoot or oscillation in the plotted response.
+%
+% The voltage command initially rose to around 6 V and then
+% decreased toward zero as the wheel approached the target.
+%
+% This response supports stable position tracking for the simulated
+% test. 
+
+##### SOURCE END #####
+-->
+
+
+</body></html>
