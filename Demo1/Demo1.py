@@ -102,10 +102,10 @@ while True:
 
                 coord_text = f'X: {center_x:.1f}, Y: {center_y:.1f}'
                 angle_text = f'Angle: {x_angle_deg:.1f}deg'
-                lcdText = angle_text
+                lcdText = f'x-angle: {x_angle_deg:.1f}deg'
 
                 # Overlay angle onto the image
-                cv2.putText(overlay, angle_text, (int(center_x - 50), int(center_y + 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(overlay, angle_text, (int(center_x - 50), int(center_y + 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (100, 255, 0), 2)
                 # Overlay coordinates of center onto the image
                 cv2.putText(overlay, coord_text, (int(center_x - 50), int(center_y - 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(0, 255, 0),2,)
     else:
