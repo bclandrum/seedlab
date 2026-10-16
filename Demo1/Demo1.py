@@ -1,6 +1,6 @@
 # Josiah Husmann, Bradley Landrum - SEED Lab
 # ArUco angle detection
-# Program finds the angle from the middle that an ArUco marker is detected from the camera and displays the x-angle on the LCD Screen
+# Program finds the x-angle from the center of screen to the middle of an ArUco marker that detected from the camera and displays it on the LCD Screen
 
 import queue
 import threading
