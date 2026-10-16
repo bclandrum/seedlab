@@ -31,6 +31,3 @@ Main Arduino program for Demo1. This program:
 
 This program was used to get the calibration values for the camera.
 
-### `threadingTest.py`
-
-Example program used to test LCD threading and demonstrate communication between threads and the LCD display.
