@@ -96,8 +96,8 @@ else:
     for i in range(len(objpoints)):
         imgpoints2,_=cv2.projectPoints(objpoints[i],rvecs[i],tvecs[i],cameraMatrix,dist)
         error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
-        mean_error += error
+        meanError += error
 
-    print(f"Total Reprojection Error: {mean_error / len(objpoints):.4f} pixels")
+    print(f"Total Reprojection Error: {meanError / len(objpoints):.4f} pixels")
 
 
