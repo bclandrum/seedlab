@@ -27,7 +27,7 @@ Main Arduino program for Demo1. This program:
 * TBD
 
 
-### `CameraCalibration.py`
+### `camcal.py`
 
 This program was used to get the calibration values for the camera.
 
