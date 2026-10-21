@@ -64,12 +64,12 @@ while True:
     newFrame = cv2.undistort(frame, initCameraMatrix, distortionCoefs, None, cameraMatrix)
 
     # Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
-    marker_length = 50.0  # Adjust to your physical marker size
+    marker_length = 2.5  # Adjust to your physical marker size
     objPoints = np.array([
         [0.0,  0.0, 0.0],
-        [50.0, 0.0, 0.0],  
-        [50.0, 50.0, 0.0], 
-        [0.0,  50.0, 0.0]
+        [marker_length, 0.0, 0.0],  
+        [marker_length, marker_length, 0.0], 
+        [0.0,  marker_length, 0.0]
     ], dtype=np.float32)    
 
     grey = cv2.cvtColor(newFrame, cv2.COLOR_BGR2GRAY) # Make the image greyscale for ArUco detection
