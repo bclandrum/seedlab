@@ -5,7 +5,7 @@
 import queue
 import threading
 from random import random
-from time import sleep
+from time import sleep, time
 import cv2
 from cv2 import aruco
 import numpy as np
@@ -17,10 +17,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 q = queue.Queue()
 def myFunction():
-    # ************************
-    # Initialize your LCD here
-    # ************************
-    #LCD setup from github
+    # LCD setup from github
     lcd_columns = 16
     lcd_rows = 2
 
@@ -49,22 +46,21 @@ with open("distortionCoef.json", "r") as file2:
     distortionCoefs = np.array(json.load(file2))
 
 last_lcd_text = ""
+last_lcd_update_time = 0
+lcd_update_interval = 1.0  # Update LCD once every second
 
 aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-myThread = threading.Thread(target=myFunction,args=())
-myThread.start()   
+myThread = threading.Thread(target=myFunction, args=())
+myThread.start()    
+
 while True:
-    # Do some things...
-    putSomething = random()
-    # Send it to the thread
-    # Only send a new message when the LCD text changes
+    ret, frame = camera.read() # Take an image
+    if not ret:
+        break
+    h, w = frame.shape[:2]
 
-    # Carry on...
-    ret,frame = camera.read() # Take an image
-    h,w = frame.shape[:2]
-    img_width, img_height = 640, 480
-
-    cameraMatrix = cv2.getOptimalNewCameraMatrix(initCameraMatrix, distortionCoefs, (w,h), 1, (w,h))
+    # FIX 1: Unpack tuple properly so cameraMatrix is a valid NumPy array
+    cameraMatrix, roi = cv2.getOptimalNewCameraMatrix(initCameraMatrix, distortionCoefs, (w, h), 1, (w, h))
     newFrame = cv2.undistort(frame, initCameraMatrix, distortionCoefs, None, cameraMatrix)
 
     # Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
@@ -76,33 +72,32 @@ while True:
         [0.0,  50.0, 0.0]
     ], dtype=np.float32)    
 
-    grey = cv2.cvtColor(newFrame,cv2.COLOR_BGR2GRAY) # Make the image greyscale for ArUco detection
-    corners,ids,rejected = aruco.detectMarkers(grey,aruco_dict)
+    grey = cv2.cvtColor(newFrame, cv2.COLOR_BGR2GRAY) # Make the image greyscale for ArUco detection
+    corners, ids, rejected = aruco.detectMarkers(grey, aruco_dict)
     overlay = newFrame.copy() # Keep the original color image for imshow
-    if not ids is None:
+    
+    if ids is not None:
         ids = ids.flatten()
-        overlay = aruco.drawDetectedMarkers(overlay,corners,borderColor = (0, 255, 0))
+        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=(0, 255, 0))
         idText = ", ".join(map(str, ids)) 
         lcdText = f"ID: {idText}" 
 
         for (outline, id) in zip(corners, ids):
-            markerCorners = outline.reshape((4,2)) 
-            overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
+            markerCorners = outline.reshape((4, 2)) 
+            overlay = cv2.putText(overlay, str(id), (int(markerCorners[0, 0]), int(markerCorners[0, 1]) - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
         for i, corner in enumerate(corners):
             # 4 corners of the marker in (x, y) pixel coordinates
             pts = corner[0]
 
-            #calculate center (x, y)
+            # calculate center (x, y)
             center_x = np.mean(pts[:, 0])
             center_y = np.mean(pts[:, 1])
 
-
-            coord_text = f'X: {center_x}, Y: {center_y}'
-            # Use solvePnP to get rotation and translation vectors
-            ret, rvec, tvec = cv2.solvePnP(objPoints, corner, cameraMatrix, distortionCoefs)
+            # FIX 2: Pass corner[0] instead of corner so solvePnP receives the correct (4, 2) shape
+            ret_pnp, rvec, tvec = cv2.solvePnP(objPoints, corner[0], cameraMatrix, distortionCoefs)
             
-            if ret:
+            if ret_pnp:
                 # tvec[0] is X, tvec[2] is Z
                 x_angle_rad = np.arctan2(tvec[0][0], tvec[2][0])
                 x_angle_deg = np.degrees(x_angle_rad)
@@ -110,26 +105,23 @@ while True:
                 coord_text = f'X: {center_x:.1f}, Y: {center_y:.1f}'
                 angle_text = f'Angle: {x_angle_deg:.1f}deg'
                 lcdText = f'x-angle: {x_angle_deg:.1f}deg'
+                
                 # Overlay angle onto the image
                 cv2.putText(overlay, angle_text, (int(center_x - 50), int(center_y + 10)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (100, 255, 0), 2)
-                # Overlay coordinates of center onto the image
     else:
         lcdText = "No ArUco\nfound."
 
-    # Send the new LCD message to the thread only if it changed
-    if lcdText != last_lcd_text:
+    # FIX 3: Rate-limit LCD updates to occur at most once every 1 second
+    current_time = time()
+    if lcdText != last_lcd_text and (current_time - last_lcd_update_time >= lcd_update_interval):
         q.put(lcdText)
         last_lcd_text = lcdText
+        last_lcd_update_time = current_time
 
-    cv2.imshow("overlay",overlay)
+    cv2.imshow("overlay", overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         break
 
 camera.release()
 cv2.destroyAllWindows()
-
-
-
-# cv.undistort()
-# cv2.getoptimalcameramatrix(cameraMatrix)
