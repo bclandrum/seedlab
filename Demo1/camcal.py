@@ -1,8 +1,9 @@
 import cv2
 import os
 import glob
-import pickle
 import numpy as np
+import json
+
 # Ensure the images directory exists
 os.makedirs('images', exist_ok=True)
 
@@ -85,11 +86,13 @@ else:
     print("Camera Matrix:\n",cameraMatrix)
     print("Distortion Coefficients:\n", dist)
 
-    #save results using pickle like in example code
-    pickle.dump((cameraMatrix,dist),open("calibration.pkl","wb"))
-    pickle.dump(cameraMatrix,open("cameraMatrix.pkl","wb"))
-    pickle.dump(dist,open("dist.pkl","wb"))
-    print("Saved calibration parameters to 'calibration.pkl', camera matrix to 'cameraMatrix.pkl', and distortion coefficients to 'dist.pkl'")
+    # Save results as JSON so your main script can read them
+    with open("cameraMatrix.json", "w") as f1:
+      json.dump(cameraMatrix.tolist(), f1)
+    with open("distortionCoef.json", "w") as f2:
+      json.dump(dist.tolist(), f2)
+
+    print("Saved camera parameters to 'cameraMatrix.json' and 'distortionCoef.json'")
 
     # finding reprojection error
     meanError = 0
