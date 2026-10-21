@@ -44,9 +44,9 @@ def myFunction():
 camera = cv2.VideoCapture(0) # Initialize the camera
 sleep(.5) # wait for image to stabilize
 with open("cameraMatrix.json", "r") as file1:
-    initCameraMatrix = np.array(json.loads(file1))
+    initCameraMatrix = np.array(json.load(file1))
 with open("distortionCoef.json", "r") as file2:
-    distortionCoefs = np.array(json.loads(file2))
+    distortionCoefs = np.array(json.load(file2))
 
 last_lcd_text = ""
 
