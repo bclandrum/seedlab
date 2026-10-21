@@ -64,11 +64,11 @@ while True:
     h,w = frame.shape[:2]
     img_width, img_height = 640, 480
 
-    cameraMatrix = np.array(cv2.getOptimalNewCameraMatrix(initCameraMatrix, distortionCoefs, (w,h), 1, (w,h)))
+    cameraMatrix = cv2.getOptimalNewCameraMatrix(initCameraMatrix, distortionCoefs, (w,h), 1, (w,h))
     newFrame = cv2.undistort(frame, initCameraMatrix, distortionCoefs, None, cameraMatrix)
 
     # Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
-    marker_length = 0.05  # Adjust to your physical marker size
+    marker_length = 50.0  # Adjust to your physical marker size
     objPoints = np.array([
         [0.0,  0.0, 0.0],
         [50.0, 0.0, 0.0],  
