@@ -128,17 +128,13 @@ while True:
         # Alternatively, if you only want the forward depth (Z-axis):
         # distance = tvec[2][0]
 
-        # Print distance and angle to console
-        print(
-            f"Marker ID {ids[i]}: Distance = {distance:.2f}m | X-Angle ="
-            f" {x_angle_deg:.1f}°"
-        )
+
 
         angle_text = f"Angle: {x_angle_deg:.1f}deg"
         dist_text = f"Dist: {distance:.2f}m"
 
         # Format text for LCD (max 16 characters per line)
-        lcdText = f"D:{distance:.2f}m A:{x_angle_deg:.1f}d"
+        lcdText = f" Angle: {x_angle_deg:.1f} degrees"
 
         # Overlay angle and distance onto the image
         cv2.putText(
