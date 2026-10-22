@@ -1,3 +1,60 @@
+# Josiah Husmann, Bradley Landrum - SEED Lab
+# ArUco angle detection & distance measurement
+# Program finds the angle and distance of an ArUco marker from the camera and displays it
+
+import json
+import queue
+import threading
+from random import random
+from time import sleep, time
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import board
+import busio
+import cv2
+from cv2 import aruco
+import numpy as np
+
+q = queue.Queue()
+
+
+def myFunction():
+  # LCD setup from github
+  lcd_columns = 16
+  lcd_rows = 2
+
+  # Initialise I2C bus.
+  i2c = busio.I2C(board.SCL, board.SDA)  # uses board.SCL and board.SDA
+  # Initialise the lcd class
+  lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows, address=0x20)
+  # Turn backlight on
+  lcd.backlight = True
+
+  while True:
+    # Wait for a new message
+    lcdText = q.get()
+
+    # Clear the old message
+    lcd.clear()
+
+    # Write the new data to the LCD
+    lcd.message = lcdText
+
+
+camera = cv2.VideoCapture(0)  # Initialize the camera
+sleep(0.5)  # wait for image to stabilize
+with open("cameraMatrix.json", "r") as file1:
+  initCameraMatrix = np.array(json.load(file1))
+with open("distortionCoef.json", "r") as file2:
+  distortionCoefs = np.array(json.load(file2))
+
+last_lcd_text = ""
+last_lcd_update_time = 0
+lcd_update_interval = 1.0  # Update LCD once every second
+
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
+myThread = threading.Thread(target=myFunction, args=())
+myThread.start()
+
 while True:
   ret, frame = camera.read()  # Take an image
   if not ret:
@@ -81,3 +138,6 @@ while True:
   k = cv2.waitKey(1) & 0xFF
   if k == ord("q"):
     break
+
+camera.release()
+cv2.destroyAllWindows()
