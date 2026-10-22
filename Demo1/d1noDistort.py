@@ -1,6 +1,5 @@
 # Josiah Husmann, Bradley Landrum - SEED Lab
-# ArUco angle detection & distance measurement
-# Program finds the angle and distance of an ArUco marker from the camera and displays it
+# ArUco angle detection & distance measurement (Option A)
 
 import json
 import queue
@@ -42,6 +41,7 @@ def myFunction():
 
 camera = cv2.VideoCapture(0)  # Initialize the camera
 sleep(0.5)  # wait for image to stabilize
+
 with open("cameraMatrix.json", "r") as file1:
   initCameraMatrix = np.array(json.load(file1))
 with open("distortionCoef.json", "r") as file2:
@@ -55,14 +55,28 @@ aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 myThread = threading.Thread(target=myFunction, args=())
 myThread.start()
 
+# Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
+marker_length = 0.05  # <--- Make sure this matches your exact physical marker size in meters!
+objPoints = np.array(
+    [
+        [0.0, 0.0, 0.0],
+        [marker_length, 0.0, 0.0],
+        [marker_length, marker_length, 0.0],
+        [0.0, marker_length, 0.0],
+    ],
+    dtype=np.float32,
+)
+
 while True:
   ret, frame = camera.read()  # Take an image
   if not ret:
     break
 
-  grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Greyscale for detection
+  grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Make image greyscale for ArUco detection
   corners, ids, rejected = aruco.detectMarkers(grey, aruco_dict)
-  overlay = frame.copy()  # Keep original color frame for display
+  overlay = frame.copy()  # Keep the original color image for imshow
+
+  lcdText = ""
 
   if ids is not None:
     ids = ids.flatten()
@@ -87,7 +101,7 @@ while True:
       center_x = np.mean(pts[:, 0])
       center_y = np.mean(pts[:, 1])
 
-      # Use original initCameraMatrix and distortionCoefs directly on raw frame
+      # Pass original camera matrix and distortion coefficients directly to solvePnP
       ret_pnp, rvec, tvec = cv2.solvePnP(
           objPoints, corner[0], initCameraMatrix, distortionCoefs
       )
