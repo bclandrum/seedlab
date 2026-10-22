@@ -1,5 +1,6 @@
 # Josiah Husmann, Bradley Landrum - SEED Lab
-# ArUco angle detection & distance measurement (Option A)
+# ArUco angle detection & distance measurement
+# Program finds the angle and distance of an ArUco marker from the camera and displays it
 
 import json
 import queue
@@ -41,7 +42,6 @@ def myFunction():
 
 camera = cv2.VideoCapture(0)  # Initialize the camera
 sleep(0.5)  # wait for image to stabilize
-
 with open("cameraMatrix.json", "r") as file1:
   initCameraMatrix = np.array(json.load(file1))
 with open("distortionCoef.json", "r") as file2:
@@ -55,28 +55,35 @@ aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
 myThread = threading.Thread(target=myFunction, args=())
 myThread.start()
 
-# Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
-marker_length = 0.05  # <--- Make sure this matches your exact physical marker size in meters!
-objPoints = np.array(
-    [
-        [0.0, 0.0, 0.0],
-        [marker_length, 0.0, 0.0],
-        [marker_length, marker_length, 0.0],
-        [0.0, marker_length, 0.0],
-    ],
-    dtype=np.float32,
-)
-
 while True:
   ret, frame = camera.read()  # Take an image
   if not ret:
     break
+  h, w = frame.shape[:2]
 
-  grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Make image greyscale for ArUco detection
+  # Unpack tuple properly so cameraMatrix is a valid NumPy array
+  cameraMatrix, roi = cv2.getOptimalNewCameraMatrix(
+      initCameraMatrix, distortionCoefs, (w, h), 1, (w, h)
+  )
+
+
+  # Define 3D coordinates of the marker corners in the marker's coordinate space (in meters)
+  marker_length = 0.05  # <--- Make sure this matches your exact physical marker size in meters!
+  objPoints = np.array(
+      [
+          [0.0, 0.0, 0.0],
+          [marker_length, 0.0, 0.0],
+          [marker_length, marker_length, 0.0],
+          [0.0, marker_length, 0.0],
+      ],
+      dtype=np.float32,
+  )
+
+  grey = cv2.cvtColor(
+      frame, cv2.COLOR_BGR2GRAY
+  )  # Make the image greyscale for ArUco detection
   corners, ids, rejected = aruco.detectMarkers(grey, aruco_dict)
   overlay = frame.copy()  # Keep the original color image for imshow
-
-  lcdText = ""
 
   if ids is not None:
     ids = ids.flatten()
@@ -97,27 +104,37 @@ while True:
       )
 
     for i, corner in enumerate(corners):
+      # 4 corners of the marker in (x, y) pixel coordinates
       pts = corner[0]
+
+      # calculate center (x, y)
       center_x = np.mean(pts[:, 0])
       center_y = np.mean(pts[:, 1])
 
-      # Pass original camera matrix and distortion coefficients directly to solvePnP
+      # Pass corner[0] instead of corner so solvePnP receives the correct (4, 2) shape
       ret_pnp, rvec, tvec = cv2.solvePnP(
-          objPoints, corner[0], initCameraMatrix, distortionCoefs
+          objPoints, corner[0], cameraMatrix, distortionCoefs
       )
 
       if ret_pnp:
+        # tvec[0] is X, tvec[1] is Y, tvec[2] is Z
         x_angle_rad = np.arctan2(tvec[0][0], tvec[2][0])
         x_angle_deg = np.degrees(x_angle_rad)
 
         # Calculate Euclidean distance from camera to marker (in meters)
         distance = np.linalg.norm(tvec)
+        # Alternatively, if you only want the forward depth (Z-axis):
+        # distance = tvec[2][0]
+
+
 
         angle_text = f"Angle: {x_angle_deg:.1f}deg"
         dist_text = f"Dist: {distance:.2f}m"
 
+        # Format text for LCD (max 16 characters per line)
         lcdText = f" Angle: {x_angle_deg:.1f} degrees"
 
+        # Overlay angle and distance onto the image
         cv2.putText(
             overlay,
             angle_text,
