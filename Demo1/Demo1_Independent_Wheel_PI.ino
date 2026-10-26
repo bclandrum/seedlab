@@ -1,15 +1,14 @@
 // EENG350 Demo 1 — independent left/right wheel position + velocity control.
-// Adapted from the user's original wiring, encoder setup and turn-then-drive state machine.
-// This is a TEST VERSION: tune on blocks first. Wheel encoders do not measure floor slip.
+// Cailey Cashion
 #include <Arduino.h>
 #include <math.h>
 
 // ===================== CHANGE FOR EACH DEMO RUN =====================
-const float DISTANCE_FT = 2.0f;
-const float ANGLE_DEG = -45.0f;   // + LEFT, - RIGHT
-const unsigned long START_DELAY_MS = 0;
+const float DISTANCE_FT = 1.0f;
+const float ANGLE_DEG = 180.0f;   // + LEFT, - RIGHT
+const unsigned long START_DELAY_MS = 0; // set to 0 since arduino has built in delay
 
-// ===================== YOUR ROBOT'S HARDWARE =====================
+// ===================== HARDWARE =====================
 const float WHEEL_RADIUS_M = 0.1397f / 2.0f; // 5.5-inch diameter
 const float WHEEL_SPACING_M = 0.3175f;       // 12.5-inch wheel spacing
 const float TURN_WHEELBASE_M = 0.3362f;
@@ -25,21 +24,16 @@ const float RAD_PER_COUNT = 2.0f * PI / COUNTS_PER_WHEEL_REV;
 const float BATTERY_V = 7.8f;
 const float VOLTAGE_LIMIT = 7.0f;
 
-// ===================== TUNE THESE ON YOUR ROBOT =====================
-// Outer position P: wheel position error [rad] -> desired wheel speed [rad/s].
-// Inner speed PI: wheel speed error [rad/s] -> voltage [V].
-// They are NOT the same units as the gains in your previous sketch.
-const float KP_POS = 1.25f;    // conservative initial experiment, not verified
-const float KP_VEL_L = 0.873f;  // independent right wheel gain — tune separately
-const float KP_VEL_R = 1.1f;  // independent left wheel proportional gain
-const float KI_VEL_L = 0.0f;  // left wheel integral gain [V/rad]; enable after P tuning
-const float KI_VEL_R = 0.0f;  // right wheel integral gain [V/rad]; enable after P tuning
-const float MAX_SPEED_INTEGRAL = 6.0f; // speed-error integral limit [rad]
-const float MAX_SPEED_RAD_S = 4.0f; // temporary low-speed test limit
+// ===================== Controller Values =====================
+const float KP_POS = 1.25f;    
+const float KP_VEL_L = 0.873f;  // independent right wheel gain 
+const float KP_VEL_R = 1.1f;  // independent left wheel gain
+const float KI_VEL_L = 0.0f;  
+const float KI_VEL_R = 0.0f;  
+const float MAX_SPEED_INTEGRAL = 6.0f;
+const float MAX_SPEED_RAD_S = 4.0f;
 const float TURN_SPEED_RAD_S = 2.0f;
 
-// Allow forward wheel motion only during DRIVING. Turns can spin in both directions.
-// This does not prevent coasting after output is turned off.
 const float TURN_POS_TOL_RAD = 0.05f;
 const float DRIVE_POS_TOL_RAD = 0.15f;
 const float WHEEL_SPEED_TOL_RAD_S = 0.3f;
@@ -61,7 +55,7 @@ float wheelSpeed[2] = {0.0f, 0.0f};
 float desiredWheelAngle[2] = {0.0f, 0.0f};
 float desiredWheelSpeed[2] = {0.0f, 0.0f};
 float commandedVoltage[2] = {0.0f, 0.0f};
-float speedIntegral[2] = {0.0f, 0.0f}; // left/right integral of speed error
+float speedIntegral[2] = {0.0f, 0.0f}; 
 float rho = 0.0f, phi = 0.0f;
 unsigned long bootMs, runStartMs, lastUpdateUs, lastPrintMs;
 unsigned long settledSinceMs = 0;
@@ -126,16 +120,12 @@ void controlWheels(float dt) {
     float minVoltage = (state == DRIVING) ? 0.0f : -VOLTAGE_LIMIT;
 
     // Tentative integral, clamped to prevent unbounded accumulation.
-    float nextIntegral = constrain(speedIntegral[i] + speedError * dt,
-                                   -MAX_SPEED_INTEGRAL, MAX_SPEED_INTEGRAL);
+    float nextIntegral = constrain(speedIntegral[i] + speedError * dt, -MAX_SPEED_INTEGRAL, MAX_SPEED_INTEGRAL);
     float tentativeVoltage = kp * speedError + ki * nextIntegral;
 
-    // Conditional integration anti-windup: do not integrate when saturated
-    // and the current error would push farther into that saturation.
     bool highSaturated = tentativeVoltage > VOLTAGE_LIMIT;
     bool lowSaturated = tentativeVoltage < minVoltage;
-    if (ki > 0.0f && !((highSaturated && speedError > 0.0f) ||
-                       (lowSaturated && speedError < 0.0f))) {
+    if (ki > 0.0f && !((highSaturated && speedError > 0.0f) || (lowSaturated && speedError < 0.0f))) {
       speedIntegral[i] = nextIntegral;
     }
 
@@ -152,13 +142,8 @@ void controlWheels(float dt) {
             : MIN_TURN_VOLTAGE_R;
 
         // Only boost voltage when moving toward the target
-        if (fabsf(positionError) > TURN_POS_TOL_RAD &&
-            voltage * positionError > 0.0f &&
-            fabsf(voltage) < minTurnVoltage) {
-
-            voltage = (positionError > 0.0f)
-                    ? minTurnVoltage
-                    : -minTurnVoltage;
+        if (fabsf(positionError) > TURN_POS_TOL_RAD && voltage * positionError > 0.0f && fabsf(voltage) < minTurnVoltage) {
+            voltage = (positionError > 0.0f) ? minTurnVoltage : -minTurnVoltage;
         }
     }
 
@@ -174,8 +159,7 @@ bool bothWheelsSettled(unsigned long now) {
         : DRIVE_POS_TOL_RAD;
 
     for (byte i = 0; i < 2; i++) {
-        if (fabsf(desiredWheelAngle[i] - wheelAngle[i]) > posTol ||
-            fabsf(wheelSpeed[i]) > WHEEL_SPEED_TOL_RAD_S) {
+        if (fabsf(desiredWheelAngle[i] - wheelAngle[i]) > posTol || fabsf(wheelSpeed[i]) > WHEEL_SPEED_TOL_RAD_S) {
             closeAndSlow = false;
         }
     }
@@ -307,6 +291,7 @@ void loop() {
       break;
   }
 
+  // print statements for debugging and testing during Demo 1
   if (now - lastPrintMs >= 200UL) {
     lastPrintMs = now;
     Serial.print(F("state=")); Serial.print((int)state);
