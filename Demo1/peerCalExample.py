@@ -19,9 +19,8 @@ camera = cv.VideoCapture(0)
 camera.set(cv.CAP_PROP_FRAME_WIDTH, 640)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
 i = 0
-images = [] 
 
-print("Press 'f' to capture a clean image.")
+print("Press 'f' to capture and detect chessboard.")
 print("Press 'c' to finish, calibrate, and save JSON files.")
 print("Press 'q' to quit without saving.")
 
@@ -31,38 +30,44 @@ while True:
     if not bol:
         print("Could not capture image from camera")
         break
-    else:
+            
+    # Display smooth, lag-free live video feed
+    cv.imshow('Video', img)
+    
+    key = cv.waitKey(1) & 0xFF
+    
+    if key == ord('f'):
+        # Process detection ONLY when 'f' is pressed
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         ret, corners = cv.findChessboardCorners(gray, (7,7), None)
      
         if ret == True:
             corners2 = cv.cornerSubPix(gray, corners, (11,11), (-1,-1), criteria)
-            
-        key = cv.waitKey(1)
-        if key == ord('f') and ret == True:
-            # Append a clean copy of the original raw image (no overlays)
             images.append(img.copy())
             objpoints.append(objp)
             imgpoints.append(corners2)
             i = i + 1
-            print(f"Captured clean image {i}")
-        elif key == ord('c'):
-            if i > 5:  # Require at least a few images to calibrate safely
-                calibrated = True
-                break
-            else:
-                print("Capture at least a few more images before calibrating!")
-        elif key == ord('q'):
-            break
+            print(f"Successfully captured image {i}")
+        else:
+            print("Chessboard not detected! Make sure the full board is visible and try again.")
             
-        # Display clean live video feed with no text or drawing overlays
-        cv.imshow('Video', img)
+    elif key == ord('c'):
+        if i > 5:  # Require at least a few images to calibrate safely
+            calibrated = True
+            break
+        else:
+            print("Capture at least a few more images before calibrating!")
+            
+    elif key == ord('q'):
+        break
          
 if calibrated or i > 0:
     print("Running calibration...")
-    cap, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+    # Use the last successfully captured gray shape or default
+    gray_shape = (640, 480)
+    cap, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray_shape, None, None)
     if cap:
-        h, w = img.shape[:2]
+        h, w = 480, 640
         newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
         print(f"matrix: {mtx}")
         print(f"dist: {dist}")
@@ -77,11 +82,12 @@ if calibrated or i > 0:
             
         print("Saved cameraMatrix.json and distortionCoef.json successfully!")
         
-        dst = cv.undistort(img, mtx, dist, None, newcameramtx)
-        x, y, w, h = roi
-        dst = dst[y:y+h, x:x+w]
-        cv.imshow('fixed image', dst)
-        sleep(5)
+        if len(images) > 0:
+            dst = cv.undistort(images[-1], mtx, dist, None, newcameramtx)
+            x, y, w, h = roi
+            dst = dst[y:y+h, x:x+w]
+            cv.imshow('fixed image', dst)
+            sleep(5)
     else:
         print("failed to calibrate")
          
