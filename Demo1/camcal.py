@@ -18,6 +18,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, frameSize[0])
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frameSize[1])
 
 num = 0
+# Save / Calibrate / Quit UI
 print("Press 's' to save a chessboard image.")
 print("Press 'c' to finish capturing and run calibration.")
 print("Press 'q' to quit without calibrating.")
@@ -62,7 +63,7 @@ for fname in images:
     img = cv2.imread(fname)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if 'cv' in globals() else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Find the chess board corners
+    # Find and handle the chess board corners
     ret, corners = cv2.findChessboardCorners(gray, chessboardSize, None)
 
     if ret == True:
