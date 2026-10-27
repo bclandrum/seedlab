@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import glob
 import json
 
 # termination criteria
@@ -11,47 +10,83 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 objp = np.zeros((7*7, 3), np.float32)
 objp[:, :2] = np.mgrid[0:7, 0:7].T.reshape(-1, 2) * 20
 
-# Arrays to store object points and image points from all the images.
+# Arrays to store object points and image points
 objpoints = [] # 3d point in real world space
-imgpoints = [] # 2d points in image plane.
+imgpoints = [] # 2d points in image plane
 
-# Load your 640x480 images
-images = glob.glob('*.jpg')
+# Start video capture
+cap = cv2.VideoCapture(0)
 
-for fname in images:
-    img = cv2.imread(fname)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Force the 640x480 resolution
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-    # Find the chess board corners
-    ret, corners = cv2.findChessboardCorners(gray, (7, 7), None)
+print("Press 's' to capture a calibration pattern.")
+print("Press 'c' to finish capturing and start calibration.")
 
-    # If found, add object points, image points (after refining them)
-    if ret == True:
-        objpoints.append(objp)
+captured_count = 0
+gray_shape = None
 
-        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-        imgpoints.append(corners2)
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Failed to grab frame.")
+        break
 
-        # Draw and display the corners
-        cv2.drawChessboardCorners(img, (7, 7), corners2, ret)
-        cv2.imshow('img', img)
-        cv2.waitKey(500)
+    # Display the live feed
+    cv2.imshow('Live Camera - Press s to save, c to calculate', frame)
+    key = cv2.waitKey(1) & 0xFF
 
+    if key == ord('s'):
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        if gray_shape is None:
+            gray_shape = gray.shape[::-1]
+        
+        # Find the chess board corners
+        ret_corners, corners = cv2.findChessboardCorners(gray, (7, 7), None)
+
+        # If found, add object points, image points (after refining them)
+        if ret_corners:
+            objpoints.append(objp)
+            corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+            imgpoints.append(corners2)
+            
+            # Draw and display the corners to confirm capture[cite: 2]
+            cv2.drawChessboardCorners(frame, (7, 7), corners2, ret_corners)
+            cv2.imshow('Live Camera - Press s to save, c to calculate', frame)
+            cv2.waitKey(500) # Pause for 500ms to show the drawn corners[cite: 2]
+            
+            captured_count += 1
+            print(f"Captured {captured_count} images successfully!")
+        else:
+            print("Checkerboard not found in this frame. Try adjusting the angle or lighting.")
+
+    elif key == ord('c'):
+        print("Finished image capture. Starting calibration...")
+        break
+
+cap.release()
 cv2.destroyAllWindows()
 
-# Calibrate the camera to get the camera matrix (mtx) and distortion coefficients (dist)
-ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+if captured_count < 10:
+    print("Note: For better results, you need at least 10 test patterns[cite: 2].")
 
-# Convert NumPy arrays to standard Python lists for JSON serialization
-camera_matrix_data = mtx.tolist()
-distortion_data = dist.tolist()
+if len(objpoints) > 0:
+    # Calibrate the camera to get the camera matrix (mtx) and distortion coefficients (dist)[cite: 3]
+    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray_shape, None, None)
 
-# Write the camera matrix to a JSON file
-with open('camera_matrix.json', 'w') as f:
-    json.dump(camera_matrix_data, f, indent=4)
+    # Convert NumPy arrays to standard Python lists for JSON serialization
+    camera_matrix_data = mtx.tolist()
+    distortion_data = dist.tolist()
 
-# Write the distortion coefficients to a JSON file
-with open('distortion_coefficients.json', 'w') as f:
-    json.dump(distortion_data, f, indent=4)
+    # Write the camera matrix to a JSON file
+    with open('camera_matrix.json', 'w') as f:
+        json.dump(camera_matrix_data, f, indent=4)
 
-print("Calibration complete. Data saved to 'camera_matrix.json' and 'distortion_coefficients.json'.")
+    # Write the distortion coefficients to a JSON file
+    with open('distortion_coefficients.json', 'w') as f:
+        json.dump(distortion_data, f, indent=4)
+
+    print("Calibration complete. Data saved to 'camera_matrix.json' and 'distortion_coefficients.json'.")
+else:
+    print("No images were captured. Calibration failed.")
