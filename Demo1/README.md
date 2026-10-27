@@ -26,7 +26,7 @@ Main Pi program for Demo1. This program:
 
 This program was used to get the calibration values for the camera.
 
-### 'Demo1_Independent_Wheel_PI.ino'
+### `Demo1_Independent_Wheel_PI.ino`
 
 Each wheel uses encoder feedback and two control loops:
 - **Position P controller:** converts wheel-position error into a desired wheel speed
