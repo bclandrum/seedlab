@@ -106,7 +106,7 @@ def main():
                 dist_str = f"{distance:.2f}m"
                 angle_str = f"{angle_deg:.1f} deg"
                 
-                lcd_msg = f"ID: {ids[0][0]}\nAng:{angle_str} D:{dist_str}"
+                lcd_msg = f"x-angle:{angle_str}"
                 
                 # Draw text near the marker center
                 center_x = int(np.mean(marker_corners[:, 0]))
