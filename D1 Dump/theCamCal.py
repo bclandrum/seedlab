@@ -80,11 +80,11 @@ if len(objpoints) > 0:
     distortion_data = dist.tolist()
 
     # Write the camera matrix to a JSON file
-    with open('camera_matrix.json', 'w') as f:
+    with open('cameraMatrix.json', 'w') as f:
         json.dump(camera_matrix_data, f, indent=4)
 
     # Write the distortion coefficients to a JSON file
-    with open('distortion_coefficients.json', 'w') as f:
+    with open('distortionCoef.json', 'w') as f:
         json.dump(distortion_data, f, indent=4)
 
     print("Calibration complete. Data saved to 'camera_matrix.json' and 'distortion_coefficients.json'.")
