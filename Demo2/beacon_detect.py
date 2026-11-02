@@ -113,7 +113,7 @@ while True:
             hsv_left = cv2.cvtColor(left_roi, cv2.COLOR_BGR2HSV) if left_roi.size > 0 else np.zeros((1,1,3), dtype=np.uint8)
             hsv_right = cv2.cvtColor(right_roi, cv2.COLOR_BGR2HSV) if right_roi.size > 0 else np.zeros((1,1,3), dtype=np.uint8)
             
-            # Masks for Green (Left arrow) and Red (Right arrow)[cite: 7]
+            # Masks for Green (Left arrow) and Red (Right arrow)
             mask_green = cv2.inRange(hsv_left, np.array([40, 50, 50]), np.array([90, 255, 255]))
             
             mask_red1 = cv2.inRange(hsv_right, np.array([0, 50, 50]), np.array([10, 255, 255]))
@@ -123,7 +123,7 @@ while True:
             green_pixels = cv2.countNonZero(mask_green)
             red_pixels = cv2.countNonZero(mask_red)
             
-            # True if Green (Left) is dominant, False if Red (Right)[cite: 7]
+            # True if Green (Left) is dominant, False if Red (Right)
             is_left = bool(green_pixels > red_pixels)
             dir_str = "Left" if is_left else "Right"
             
