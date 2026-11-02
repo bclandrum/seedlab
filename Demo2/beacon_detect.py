@@ -116,16 +116,25 @@ while True:
             # Masks for Green (Left arrow) and Red (Right arrow)
             mask_green = cv2.inRange(hsv_left, np.array([40, 50, 50]), np.array([90, 255, 255]))
             
+            mask_whiteL = cv2.inRange(hsv_left, np.array([0,0,180]), np.array([180, 40, 255]))
+            mask_whiteR = cv2.inRange(hsv_right, np.array([0,0,180]), np.array([180, 40, 255]))
+            
             mask_red1 = cv2.inRange(hsv_right, np.array([0, 50, 50]), np.array([10, 255, 255]))
             mask_red2 = cv2.inRange(hsv_right, np.array([170, 50, 50]), np.array([180, 255, 255]))
             mask_red = cv2.bitwise_or(mask_red1, mask_red2)
             
+            white_pixels = cv2.countNonZero(mask_whiteL) + cv2.countNonZero(mask_whiteR)
             green_pixels = cv2.countNonZero(mask_green)
             red_pixels = cv2.countNonZero(mask_red)
             
             # True if Green (Left) is dominant, False if Red (Right)
-            is_left = bool(green_pixels > red_pixels)
-            dir_str = "Left" if is_left else "Right"
+            if green_pixels > red_pixels:
+                if green_pixels * 6 > white_pixels:
+                    dir_str = "Left"
+                else:
+                    dir_str = "Stop"
+            else:
+                dir_str = "Right"
             
             # Format strings for LCD and Display
             dist_str = f"{distance:.2f}m"
