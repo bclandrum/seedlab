@@ -138,14 +138,19 @@ def main():
                 
                 if green_pixels > red_pixels:
                     if green_pixels * 6 > white_pixels:
-                        dir_str = "Leftt"
+                        dir_str = "Left"
+                        dirInt = 0
                     else:
-                        dir_str = "Stopp"
+                        dir_str = "Stop"
+                        dirInt = 2
+
                 else:
                     if red_pixels * 6 > white_pixels:
                         dir_str = "Right"
+                        dirInt = 1
                     else:
-                        dir_str = "Stopp"
+                        dir_str = "Stop"
+                        dirInt = 2
                 
                 
                 # Format strings for LCD and Display
@@ -161,7 +166,8 @@ def main():
 
                 # arduino
                 if bus is not None:
-                    data_bytes = struct.pack('ff5s', float(distance), float(angle_deg), dir_str)
+                    # Pack distance (float), angle (float), and is_left (boolean) into 9 bytes
+                    data_bytes = struct.pack('ffi', float(distance), float(angle_deg), dirInt)
                     data_list = list(data_bytes)
                     try:
                         # Write the block of data to Arduino register 0
