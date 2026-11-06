@@ -68,6 +68,8 @@ def main():
     ], dtype=np.float32)
 
     last_lcd_update = 0.0
+    last_arduino_update = 0.0
+    ARDUINO_UPDATE_INTERVAL = 0.1  # Limit Arduino I2C writes to 10 Hz (every 100ms)
 
     while True:
         ret, frame = cap.read()
@@ -131,7 +133,6 @@ def main():
                 mask_red2 = cv2.inRange(hsv_right, np.array([170, 120, 120]), np.array([180, 255, 255]))
                 mask_red = cv2.bitwise_or(mask_red1, mask_red2)
 
-
                 white_pixels = cv2.countNonZero(mask_whiteL) + cv2.countNonZero(mask_whiteR)
                 green_pixels = cv2.countNonZero(mask_green)
                 red_pixels = cv2.countNonZero(mask_red)
@@ -152,7 +153,6 @@ def main():
                         dir_str = "Stop"
                         dirInt = 2
                 
-                
                 # Format strings for LCD and Display
                 dist_str = f"{distance:.2f}m"
                 angle_str = f"{angle_deg:.1f} deg"
@@ -164,18 +164,18 @@ def main():
                 cv2.putText(undistorted_frame, f"Ang: {angle_str}", (center_x - 40, center_y + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 cv2.putText(undistorted_frame, f"Dir: {dir_str}", (center_x - 40, center_y + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
 
-                # arduino
-                if bus is not None:
-                    # Pack distance (float), angle (float), and is_left (boolean) into 9 bytes
+                # Arduino I2C Write (Rate-limited)
+                current_time = time.time()
+                if bus is not None and (current_time - last_arduino_update >= ARDUINO_UPDATE_INTERVAL):
                     data_bytes = struct.pack('ffi', float(distance), float(angle_deg), dirInt)
                     data_list = list(data_bytes)
                     try:
-                        # Write the block of data to Arduino register 0
                         bus.write_i2c_block_data(ARDUINO_ADDR, 0, data_list)
+                        last_arduino_update = current_time
                     except Exception as e:
-                        print(f"I2C Write Error:    {e}")
+                        print(f"I2C Write Error: {e}")
 
-        # Update LCD once per two second
+        # Update LCD once per two seconds
         current_time = time.time()
         if current_time - last_lcd_update >= 2.0:
             lcd_queue.put(lcd_msg)
