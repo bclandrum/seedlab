@@ -15,7 +15,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 lcd_queue = queue.Queue()
 
 # Arduino I2C setup
-ARDUINO_ADDR = 0.2
+ARDUINO_ADDR = 8
 try:
     bus = SMBus(1)
 except Exception as e:
