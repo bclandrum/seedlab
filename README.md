@@ -7,6 +7,7 @@ Josiah Husmann, Bradley Landrum, Cailey Cashion, Stefan Marshall
 ## Project Overview:
 
 This repository serves as the centralized workspace for our SEED Lab coursework. 
+The goal of this project and SEED Lab is to program a robot using a Raspberry Pi and an Arduino that can detect ArUco markers, and use motor controls to go within 1.5 feet of the ArUco marker and turn in the direction of a detected arrow to then search for another.
 Its primary purpose is to organize, share, and version-control the codebase used for our autonomous robotics projects. 
 This includes developing OpenCV computer vision pipelines, implementing Raspberry Pi to Arduino communication protocols, 
 and managing the overall system architecture.
